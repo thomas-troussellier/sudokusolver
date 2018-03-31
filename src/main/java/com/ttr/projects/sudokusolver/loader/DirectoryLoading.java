@@ -3,6 +3,7 @@ package com.ttr.projects.sudokusolver.loader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,6 +13,9 @@ import com.ttr.projects.sudokusolver.model.Cell;
 import com.ttr.projects.sudokusolver.model.Grid;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import static com.ttr.projects.sudokusolver.model.SudokuGridConstants.*;
 
 public class DirectoryLoading {
     private static String[] GRID_FILES_EXTENTIONS = {"grid"};
@@ -29,33 +33,51 @@ public class DirectoryLoading {
 
     private static Grid convertGridFileToGrid(File file) {
         if (!file.exists()) {
-            System.out.println("File " + file.getName() + " does not exist");
+            System.err.printf("File %s does not exist", file.getName());
             return null;
         }
 
         Grid scannedGrid;
 
         try {
-            List<Cell[]> cellLines = Files.lines(file.toPath()).map(line -> {
-                String[] intAsString = line.split(",");
-                Cell[] cells = new Cell[intAsString.length];
-                for (int i = 0; i < intAsString.length; i++) {
-                    cells[i] = new Cell(Integer.parseInt(intAsString[i]), IntStream.range(1, intAsString.length + 1).boxed().collect(Collectors.toList()));
-                }
-
-                return cells;
+            List<String> lines = Files.lines(file.toPath()).filter(line -> {
+                // remove lines starting with //
+                return !StringUtils.startsWith(line, "//");
             }).collect(Collectors.toList());
 
-            if (CollectionUtils.isEmpty(cellLines)) {
+            if (CollectionUtils.isEmpty(lines)) {
+                System.err.printf("File did not contain a grid");
                 return null;
             }
 
-            Cell[][] grid = new Cell[cellLines.size()][];
-            grid = cellLines.toArray(grid);
+            if (lines.size() != GRID_LINE_NUMBER) {
+                System.err.printf("Grid does not have %s lines", GRID_LINE_NUMBER);
+                return null;
+            }
 
-            scannedGrid = new Grid(file.getName(), grid, IntStream.range(1, grid.length + 1).boxed().collect(Collectors.toList()));
+            List<Cell> grid = IntStream.range(0, lines.size()).mapToObj(l -> {
+                String[] intAsString = lines.get(l).split(",");
+                List<Cell> cells = new ArrayList<>();
+                for (int c = 0; c < intAsString.length; c++) {
+                    // line and column +1 because zero based indexes
+                    cells.add(new Cell(Integer.parseInt(intAsString[c]), new ArrayList<>(CELLS_POSSIBLE_VALUES), l + 1, c + 1));
+                }
+                return cells;
+            }).flatMap(List::stream).collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(grid)) {
+                System.err.printf("Failed to parse grid, grid was empty");
+                return null;
+            }
+
+            if (grid.size() != GRID_CELL_NUMBER) {
+                System.err.printf("Grid did not have %s cells", GRID_CELL_NUMBER);
+                return null;
+            }
+
+            scannedGrid = new Grid(file.getName(), grid);
         } catch (IOException ioe) {
-            System.out.println("Failed to parse file " + file.getName());
+            System.err.printf("Failed to parse file %s with error %s", file.getName(), ioe.getMessage());
             return null;
         }
 

@@ -1,77 +1,83 @@
 package com.ttr.projects.sudokusolver.model;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import org.apache.commons.lang3.BooleanUtils;
+
+import static com.ttr.projects.sudokusolver.model.SudokuGridConstants.*;
 
 public class Grid {
+    // Grid filename
     private String name;
-    private Cell[][] grid;
-    private List<Integer> cellValues;
+    // Grid content - 81 cells for 9 by 9 sudoku grids
+    private List<Cell> grid;
 
-    public Grid(String name, Cell[][] grid, List<Integer> cellValues) {
+    public Grid(String name, List<Cell> grid) {
         this.name = name;
         this.grid = grid;
-        this.cellValues = cellValues;
     }
 
     public void displayGrid() {
         System.out.println("Grid " + name);
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid.length; j++) {
-                System.out.print(grid[i][j].displayPossibleValues());
-            }
-            System.out.println();
-        }
+
+        Collection<List<Cell>> gridLines = this.grid.stream().collect(Collectors.groupingBy(Cell::getLine)).values();
+
+        gridLines.forEach(line ->
+                System.out.println(line.stream().sorted(Comparator.comparing(Cell::getColumn)).map(Cell::toString).collect(Collectors.joining()))
+        );
     }
 
     public Grid solveGrid() {
+        // TODO extract methods to separate different possible strategies. Maybe new Solver class ?
         // Actualize possible values for lines / columns / regions
-        for (int i = 0; i < this.grid.length; i++) {
-            List<Integer> impossibleValues = Stream.of(this.getLine(i)).map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
-            Stream.of(this.getLine(i)).forEach(cell -> cell.removeImpossibleValues(impossibleValues));
+        for (int i = 1; i <= GRID_LINE_NUMBER; i++) {
+            List<Integer> impossibleValues = this.getLine(i).stream().map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
+            this.getLine(i).forEach(cell -> cell.removeImpossibleValues(impossibleValues));
         }
-        for (int i = 0; i < this.grid.length; i++) {
-            List<Integer> impossibleValues = Stream.of(this.getColumn(i)).map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
-            Stream.of(this.getColumn(i)).forEach(cell -> cell.removeImpossibleValues(impossibleValues));
+        for (int i = 1; i <= GRID_COLUMN_NUMBER; i++) {
+            List<Integer> impossibleValues = this.getColumn(i).stream().map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
+            this.getColumn(i).stream().forEach(cell -> cell.removeImpossibleValues(impossibleValues));
         }
-        for (int i = 0; i < this.grid.length; i++) {
-            List<Integer> impossibleValues = Stream.of(this.getRegion(i)).map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
-            Stream.of(this.getRegion(i)).forEach(cell -> cell.removeImpossibleValues(impossibleValues));
+        for (int i = 1; i <= GRID_REGION_NUMBER; i++) {
+            List<Integer> impossibleValues = this.getRegion(i).stream().map(Cell::getValue).filter(value -> value != 0).collect(Collectors.toList());
+            this.getRegion(i).stream().forEach(cell -> cell.removeImpossibleValues(impossibleValues));
         }
+
         // Evaluate cells
+        Optional<Boolean> reevaluate = this.grid.stream().map(Cell::evaluateCell).filter(BooleanUtils::isTrue).findFirst();
+
+        if (!reevaluate.isPresent()) {
+            System.out.println("Nothing to evaluate anymore");
+            return null;
+        }
+
         // repeat until no cell changed
+        this.solveGrid();
         return null;
     }
 
-    private Cell[] getLine(int index) {
-        if (index < 0 || index > this.grid.length) {
-            throw new IllegalArgumentException("Index out of bounds: " + index);
-        }
-        return this.grid[index];
+    private List<Cell> getLine(int index) {
+        checkIndex(index, GRID_LINE_NUMBER);
+        return grid.stream().filter(cell -> cell.getLine() == index).collect(Collectors.toList());
     }
 
-    private Cell[] getColumn(int index) {
-        if (index < 0 || index > this.grid.length) {
-            throw new IllegalArgumentException("Index out of bounds: " + index);
-        }
-        return Arrays.stream(this.grid).map(cells -> cells[index]).toArray(Cell[]::new);
+    private List<Cell> getColumn(int index) {
+        checkIndex(index, GRID_COLUMN_NUMBER);
+        return grid.stream().filter(cell -> cell.getColumn() == index).collect(Collectors.toList());
     }
 
-    private Cell[] getRegion(int index) {
-        if (index < 0 || index > this.grid.length) {
+    private List<Cell> getRegion(int index) {
+        checkIndex(index, GRID_REGION_NUMBER);
+        return this.grid.stream().filter(cell -> cell.getRegion() == index).collect(Collectors.toList());
+    }
+
+    private void checkIndex(int index, int limitNumber) {
+        if (index < 1 || index > limitNumber) {
             throw new IllegalArgumentException("Index out of bounds: " + index);
         }
-
-        int regionSize = (int) Math.round(Math.sqrt(this.grid.length));
-        int lowerBound = 0;
-        int upperBound = (index + 1) * regionSize;
-
-        Cell[] region = new Cell[this.grid.length];
-        for (int i = 0; i < regionSize; i++) {
-            Arrays.copyOfRange(this.getLine(i), lowerBound, upperBound);
-        }
-        return Arrays.stream(this.grid).map(cells -> cells[index]).toArray(Cell[]::new);
     }
 }

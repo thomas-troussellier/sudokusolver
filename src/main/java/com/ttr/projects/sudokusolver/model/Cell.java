@@ -5,16 +5,56 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import static com.ttr.projects.sudokusolver.model.SudokuGridConstants.REGIONS_FROM_COORDINATES;
+
 public class Cell {
+    // Cell value
     private Integer value = null;
+    // Cell possible values
     private List<Integer> possibleValues = new ArrayList<>();
 
-    public Cell(Integer value, List<Integer> possibleValues) {
+    // Cell position in grid
+    private int line;
+    private int column;
+    private int region;
+
+    public Cell(Integer value, List<Integer> possibleValues, int line, int column) {
         this.value = value;
         this.possibleValues = possibleValues;
         if (value != 0) {
             this.possibleValues.clear();
         }
+        this.line = line;
+        this.column = column;
+
+        // Compute cell region based on region coordinates on the grid
+        // Get x axis and y axis coordinates by dividing cell line and column coordinates on the grid by the number of regions on each axis (3 in our case) and get upper int to
+        // get corresponding region x and y coordinates
+        this.region = REGIONS_FROM_COORDINATES.get((int) (Math.ceil(this.line / 3.0))).get((int) Math.ceil(this.column / 3.0));
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    public int getRegion() {
+        return region;
+    }
+
+    public void setRegion(int region) {
+        this.region = region;
     }
 
     public Integer getValue() {
