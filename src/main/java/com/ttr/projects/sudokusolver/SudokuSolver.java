@@ -10,6 +10,7 @@ public class SudokuSolver {
         // First step load grids
         List<Grid> grids = DirectoryLoading.loadGridsFromDirectory(args[0]);
 
+        grids.stream().forEach(Grid::solveGrid);
         grids.stream().forEach(Grid::displayGrid);
     }
 }

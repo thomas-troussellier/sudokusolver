@@ -40,7 +40,7 @@ public class DirectoryLoading {
                 String[] intAsString = line.split(",");
                 Cell[] cells = new Cell[intAsString.length];
                 for (int i = 0; i < intAsString.length; i++) {
-                    cells[i] = new Cell(Integer.parseInt(intAsString[i]), IntStream.range(1, intAsString.length).toArray());
+                    cells[i] = new Cell(Integer.parseInt(intAsString[i]), IntStream.range(1, intAsString.length + 1).boxed().collect(Collectors.toList()));
                 }
 
                 return cells;
@@ -53,7 +53,7 @@ public class DirectoryLoading {
             Cell[][] grid = new Cell[cellLines.size()][];
             grid = cellLines.toArray(grid);
 
-            scannedGrid = new Grid(file.getName(), grid);
+            scannedGrid = new Grid(file.getName(), grid, IntStream.range(1, grid.length + 1).boxed().collect(Collectors.toList()));
         } catch (IOException ioe) {
             System.out.println("Failed to parse file " + file.getName());
             return null;
