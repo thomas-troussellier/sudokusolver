@@ -42,7 +42,11 @@ public class DirectoryLoading {
         try {
             List<String> lines = Files.lines(file.toPath()).filter(line -> {
                 // remove lines starting with //
-                return !StringUtils.startsWith(line, "//");
+                boolean comment = StringUtils.startsWith(line, "//");
+                // remove blank lines
+                boolean blankLine = StringUtils.isBlank(line);
+
+                return !(comment || blankLine);
             }).collect(Collectors.toList());
 
             if (CollectionUtils.isEmpty(lines)) {
