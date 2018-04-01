@@ -21,7 +21,7 @@ public class Grid {
     public void displayGrid() {
         System.out.println("Grid " + name);
 
-        Collection<List<Cell>> gridLines = this.cells.stream().collect(Collectors.groupingBy(Cell::getLine)).values();
+        Collection<List<Cell>> gridLines = this.cells.stream().collect(Collectors.groupingBy(Cell::getRow)).values();
 
         gridLines.forEach(line ->
                 System.out.println(line.stream().sorted(Comparator.comparing(Cell::getColumn)).map(Cell::toString).collect(Collectors.joining()))
@@ -32,9 +32,9 @@ public class Grid {
         return this.cells;
     }
 
-    public List<Cell> getLine(int index) {
-        checkIndex(index, GRID_LINE_NUMBER);
-        return cells.stream().filter(cell -> cell.getLine() == index).collect(Collectors.toList());
+    public List<Cell> getRow(int index) {
+        checkIndex(index, GRID_ROW_NUMBER);
+        return cells.stream().filter(cell -> cell.getRow() == index).collect(Collectors.toList());
     }
 
     public List<Cell> getColumn(int index) {

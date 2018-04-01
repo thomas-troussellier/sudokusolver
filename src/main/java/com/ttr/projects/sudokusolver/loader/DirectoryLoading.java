@@ -54,17 +54,17 @@ public class DirectoryLoading {
                 return null;
             }
 
-            if (lines.size() != GRID_LINE_NUMBER) {
-                System.err.printf("Grid does not have %s lines", GRID_LINE_NUMBER);
+            if (lines.size() != GRID_ROW_NUMBER) {
+                System.err.printf("Grid does not have %s rows", GRID_ROW_NUMBER);
                 return null;
             }
 
-            List<Cell> grid = IntStream.range(0, lines.size()).mapToObj(l -> {
-                String[] intAsString = lines.get(l).split(",");
+            List<Cell> grid = IntStream.range(0, lines.size()).mapToObj(row -> {
+                String[] intAsString = lines.get(row).split(",");
                 List<Cell> cells = new ArrayList<>();
-                for (int c = 0; c < intAsString.length; c++) {
-                    // line and column +1 because zero based indexes
-                    cells.add(new Cell(Integer.parseInt(intAsString[c]), new ArrayList<>(CELLS_POSSIBLE_VALUES), l + 1, c + 1));
+                for (int column = 0; column < intAsString.length; column++) {
+                    // row and column +1 because zero based indexes
+                    cells.add(new Cell(Integer.parseInt(intAsString[column]), new ArrayList<>(CELLS_POSSIBLE_VALUES), row + 1, column + 1));
                 }
                 return cells;
             }).flatMap(List::stream).collect(Collectors.toList());

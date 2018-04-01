@@ -4,11 +4,11 @@ import java.util.*;
 
 public class SudokuGridConstants {
     public static final List<Integer> CELLS_POSSIBLE_VALUES = Collections.unmodifiableList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
-    public static final Integer GRID_LINE_NUMBER = 9;
+    public static final Integer GRID_ROW_NUMBER = 9;
     public static final Integer GRID_COLUMN_NUMBER = 9;
     public static final Integer GRID_REGION_NUMBER = 9;
     public static final Integer GRID_INDEX_MAX_NUMBER = 9;
-    public static final Integer GRID_CELL_NUMBER = GRID_LINE_NUMBER * GRID_COLUMN_NUMBER;
+    public static final Integer GRID_CELL_NUMBER = GRID_ROW_NUMBER * GRID_COLUMN_NUMBER;
 
     // Mapping to recover region number based on x then y region coordinates -> Map<Xaxis, Map<Yaxis, regionNumber>>
     public static final Map<Integer, Map<Integer, Integer>> REGIONS_FROM_COORDINATES;

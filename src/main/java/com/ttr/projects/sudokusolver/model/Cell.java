@@ -15,27 +15,27 @@ public class Cell {
     private List<Integer> possibleValues = new ArrayList<>();
 
     // Cell position in grid
-    private int line;
+    private int row;
     private int column;
     private int region;
 
-    public Cell(Integer value, List<Integer> possibleValues, int line, int column) {
+    public Cell(Integer value, List<Integer> possibleValues, int row, int column) {
         this.value = value;
         this.possibleValues = possibleValues;
         if (value != 0) {
             this.possibleValues.clear();
         }
-        this.line = line;
+        this.row = row;
         this.column = column;
 
         // Compute cell region based on region coordinates on the grid
-        // Get x axis and y axis coordinates by dividing cell line and column coordinates on the grid by the number of regions on each axis (3 in our case) and get upper int to
+        // Get x axis and y axis coordinates by dividing cell row and column coordinates on the grid by the number of regions on each axis (3 in our case) and get upper int to
         // get corresponding region x and y coordinates
-        this.region = REGIONS_FROM_COORDINATES.get((int) (Math.ceil(this.line / 3.0))).get((int) Math.ceil(this.column / 3.0));
+        this.region = REGIONS_FROM_COORDINATES.get((int) (Math.ceil(this.row / 3.0))).get((int) Math.ceil(this.column / 3.0));
     }
 
-    public int getLine() {
-        return line;
+    public int getRow() {
+        return row;
     }
 
     public int getColumn() {

@@ -42,13 +42,13 @@ public class GridSolver {
     }
 
     /**
-     * For each line / column / region, remove already set values from cells possible values
+     * For each row / column / region, remove already set values from cells possible values
      *
      * @param grid - the grid to solve
      */
     private static void computePossibleValues(Grid grid) {
-        for (int line = 1; line <= GRID_LINE_NUMBER; line++) {
-            computePossibleValuesForList(grid.getLine(line));
+        for (int row = 1; row <= GRID_ROW_NUMBER; row++) {
+            computePossibleValuesForList(grid.getRow(row));
         }
         for (int column = 1; column <= GRID_COLUMN_NUMBER; column++) {
             computePossibleValuesForList(grid.getColumn(column));
@@ -75,7 +75,7 @@ public class GridSolver {
     }
 
     /**
-     * For each line / column / region, check if there is a possible value that appears only for one cell
+     * For each row / column / region, check if there is a possible value that appears only for one cell
      * If that is the case, remove all other possibles from this cell except the found value
      *
      * @param grid - the grid to update
@@ -83,8 +83,8 @@ public class GridSolver {
      */
     private static boolean checkHiddenSingles(Grid grid) {
         boolean reevaluate = false;
-        for (int line = 1; line <= GRID_LINE_NUMBER; line++) {
-            reevaluate = reevaluate || checkHiddenSinglesForList(grid.getLine(line));
+        for (int row = 1; row <= GRID_ROW_NUMBER; row++) {
+            reevaluate = reevaluate || checkHiddenSinglesForList(grid.getRow(row));
         }
         for (int column = 1; column <= GRID_COLUMN_NUMBER; column++) {
             reevaluate = reevaluate || checkHiddenSinglesForList(grid.getColumn(column));
