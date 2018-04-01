@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import static com.ttr.projects.sudokusolver.model.SudokuGridConstants.CELLS_POSSIBLE_VALUES;
 import static com.ttr.projects.sudokusolver.model.SudokuGridConstants.REGIONS_FROM_COORDINATES;
 
 public class Cell {
@@ -37,28 +38,20 @@ public class Cell {
         return line;
     }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
     public int getColumn() {
         return column;
-    }
-
-    public void setColumn(int column) {
-        this.column = column;
     }
 
     public int getRegion() {
         return region;
     }
 
-    public void setRegion(int region) {
-        this.region = region;
-    }
-
     public Integer getValue() {
         return this.value;
+    }
+
+    public List<Integer> getPossibleValues() {
+        return possibleValues;
     }
 
     /**
@@ -95,6 +88,19 @@ public class Cell {
             return;
         }
         this.possibleValues.removeAll(impossibleValues);
+    }
+
+    /**
+     * Keep only given value in possible list
+     *
+     * @param valueToKeep
+     */
+    public void keepOnlyValue(Integer valueToKeep) {
+        if (!CELLS_POSSIBLE_VALUES.contains(valueToKeep)) {
+            return;
+        }
+        this.possibleValues.clear();
+        this.possibleValues.add(valueToKeep);
     }
 
     public String displayPossibleValues() {

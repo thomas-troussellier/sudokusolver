@@ -7,6 +7,7 @@ public class SudokuGridConstants {
     public static final Integer GRID_LINE_NUMBER = 9;
     public static final Integer GRID_COLUMN_NUMBER = 9;
     public static final Integer GRID_REGION_NUMBER = 9;
+    public static final Integer GRID_INDEX_MAX_NUMBER = 9;
     public static final Integer GRID_CELL_NUMBER = GRID_LINE_NUMBER * GRID_COLUMN_NUMBER;
 
     // Mapping to recover region number based on x then y region coordinates -> Map<Xaxis, Map<Yaxis, regionNumber>>
